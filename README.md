@@ -97,17 +97,17 @@ Scores are **likelihoods, not guarantees and not legal advice**.
 
 From a full pipeline run on 2026-11-01:
 
-|                                     |                                              |
-| ----------------------------------- | -------------------------------------------- |
-| Job boards                          | **135** (Greenhouse 72 · Ashby 54 · Lever 9) |
-| Open jobs processed                 | **15,952**                                   |
-| Published (DE · NL · IE)            | **1,580 · 584 · 430**                        |
-| IND register entries                | **13,022**                                   |
-| Employers with sponsor evidence     | **48** of 135                                |
-| Company-matching precision · recall | **100% · 100%** on 100 hand-labelled pairs   |
-| Duplicate postings folded           | **1,179** into 660 roles                     |
-| Full refresh of all boards          | **75 s** (down from 37 min)                  |
-| Tests                               | **262**, plus an end-to-end smoke test       |
+|                                    |                                                              |
+| ---------------------------------- | ------------------------------------------------------------ |
+| Job boards                         | **135** (Greenhouse 72 · Ashby 54 · Lever 9)                 |
+| Open jobs processed                | **15,952**                                                   |
+| Published (DE · NL · IE)           | **1,580 · 584 · 430**                                        |
+| IND register entries               | **13,022**                                                   |
+| Employers with sponsor evidence    | **48** of 135                                                |
+| Company matching (automatic rules) | **100% precision · 81.8% recall** on 100 hand-labelled pairs |
+| Duplicate postings folded          | **1,179** into 660 roles                                     |
+| Full refresh of all boards         | **75 s** (down from 37 min)                                  |
+| Tests                              | **262**, plus an end-to-end smoke test                       |
 
 ## Engineering highlights
 
@@ -115,7 +115,7 @@ From a full pipeline run on 2026-11-01:
 - **Runtime-agnostic core.** The core package uses only web-platform APIs, so the same logic can move into a future API unchanged. Storage sits behind interfaces with shared contract tests for the in-memory and SQLite implementations.
 - **Validated boundaries.** Every external response is parsed with Zod. A changed API shape fails loudly for that board instead of writing bad rows, and one bad link drops that job, not the whole board.
 - **A polite, resilient HTTP client.** Identifying User-Agent, at most one request per second per host, ETag revalidation, and exponential backoff that honours `Retry-After`.
-- **Precision first.** Company matching only auto-links exact names; everything else needs a recorded human decision, measured on a labelled evaluation set.
+- **Precision first.** Company matching only auto-links exact names; everything else needs a recorded human decision. On 100 hand-labelled pairs, including 45 deliberate look-alikes (Toast vs. "Yoast B.V."), the automatic rules scored 100% precision and 81.8% recall; the 10 misses were confirmed by human review, and the review list was widened so similar cases now surface for review.
 - **Checked against reality.** Running each extractor on live postings caught false positives the unit tests didn't, for example "deals of £100k+ ACV" read as a salary, or "Visa sponsorship is not offered" counted as a mention. Every one became a regression test.
 - **End-to-end smoke test in CI.** Every pull request runs the real pipeline twice on fixtures, fully offline: a test-only `fetch` stub answers the API calls and fails any other request. About 3 seconds.
 - **Safe output.** All job-board text is treated as untrusted: React escapes it, RSS goes through an XML escaper, and only http(s) links are kept.
