@@ -1,0 +1,46 @@
+name: Correction or removal request
+description: Report a wrong score or company match, or ask for an employer's jobs to be removed.
+title: "[Request] "
+labels: ["request"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping keep HadiJob accurate. We reply within 2 working days for removals and wrong matches, and within 5 working days for other corrections.
+        Please don't include personal data (for example CVs or phone numbers).
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What do you need?
+      options:
+        - Remove an employer's jobs
+        - The company is matched to the wrong register entry
+        - A score or piece of evidence is wrong
+        - Something else
+    validations:
+      required: true
+  - type: input
+    id: company
+    attributes:
+      label: Company
+      placeholder: e.g. Example B.V.
+    validations:
+      required: true
+  - type: input
+    id: link
+    attributes:
+      label: Link to the job or company on HadiJob
+      placeholder: https://ilker-ekin.github.io/visa-sponsor-radar-eu/#/jobs/NL/123
+  - type: textarea
+    id: details
+    attributes:
+      label: What's wrong, or what should change?
+    validations:
+      required: true
+  - type: dropdown
+    id: role
+    attributes:
+      label: Are you the employer?
+      options:
+        - "Yes, I represent the employer"
+        - "No, I'm a user"
