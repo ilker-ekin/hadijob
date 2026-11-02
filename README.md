@@ -2,11 +2,13 @@
 
 <img src=".github/assets/logo.svg" alt="" width="72">
 
-# VisaRadar
+# HadiJob
 
 **How likely is this EU tech job to sponsor your visa?**
 
 Every tech job in Germany, the Netherlands and Ireland, scored 0–100 for visa sponsorship, with the public evidence behind each score.
+
+_"Hadi!" is Turkish for "come on, let's go"._
 
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6?logo=typescript&logoColor=white)
 ![Node](https://img.shields.io/badge/Node-24-5fa04e?logo=nodedotjs&logoColor=white)
@@ -29,7 +31,7 @@ Every tech job in Germany, the Netherlands and Ireland, scored 0–100 for visa 
 
 Developers outside the EU lose weeks applying to roles that turn out not to sponsor visas. Job boards either ignore sponsorship or rely on what employers say about themselves.
 
-VisaRadar checks **public evidence** instead: government sponsor registers, what the posting itself says, and whether the salary clears the work-permit threshold. It turns that into a score you can read in a second and verify in a click.
+HadiJob checks **public evidence** instead: government sponsor registers, what the posting itself says, and whether the salary clears the work-permit threshold. It turns that into a score you can read in a second and verify in a click.
 
 <img src=".github/assets/job.png" alt="Job page: score 85 with every piece of evidence and its weight" width="820">
 
@@ -147,7 +149,7 @@ From a full pipeline run on 2026-11-01:
 - [x] Ingestion, IND register and company matching
 - [x] Explainable scoring, dedup, RSS feeds and the static site
 - [x] Automated pipeline and deploys, end-to-end smoke test
-- [x] VisaRadar redesign with light and dark themes
+- [x] HadiJob redesign with light and dark themes
 - [ ] Public launch on its own domain
 - [ ] More countries and sponsor registers
 - [ ] Accounts, saved searches and email digests
