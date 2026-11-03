@@ -20,7 +20,7 @@ _"Hadi!" is Turkish for "come on, let's go"._
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset=".github/assets/home-dark.png">
-  <img src=".github/assets/home.png" alt="Search page: EU tech jobs with sponsorship scores" width="820">
+  <img src=".github/assets/home.png" alt="Search page: jobs at EU tech companies with sponsorship scores" width="820">
 </picture>
 
 </div>
@@ -29,7 +29,7 @@ _"Hadi!" is Turkish for "come on, let's go"._
 
 ## The problem
 
-Developers outside the EU lose weeks applying to roles that turn out not to sponsor visas. Job boards either ignore sponsorship or rely on what employers say about themselves.
+People outside the EU lose weeks applying to roles that turn out not to sponsor visas. Job boards either ignore sponsorship or rely on what employers say about themselves.
 
 HadiJob checks **public evidence** instead: government sponsor registers, what the posting itself says, and whether the salary clears the work-permit threshold. It turns that into a score you can read in a second and verify in a click.
 
