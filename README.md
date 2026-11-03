@@ -4,9 +4,9 @@
 
 # HadiJob
 
-**How likely is this EU tech job to sponsor your visa?**
+**How likely is this EU job to sponsor your visa?**
 
-Every tech job in Germany, the Netherlands and Ireland, scored 0–100 for visa sponsorship, with the public evidence behind each score.
+Open jobs at tech companies in Germany, the Netherlands and Ireland, scored 0–100 for visa sponsorship, with the public evidence behind each score. In English and Turkish.
 
 _"Hadi!" is Turkish for "come on, let's go"._
 
@@ -41,12 +41,14 @@ HadiJob checks **public evidence** instead: government sponsor registers, what t
 - **Official sponsor evidence.** The Dutch IND public register of recognised sponsors (13,000+ organisations), matched to employers with 100% precision on a hand-labelled set.
 - **Reads the posting for you.** Sponsorship offers, relocation packages and "no sponsorship" rule-outs, with negation handled ("we do _not_ offer visa sponsorship").
 - **Salary against real thresholds.** 2026 work-permit minimums for Germany, the Netherlands and Ireland, comparing base salary only (commission and deal sizes are ignored).
-- **Built to scan.** Colour-coded score tiles, evidence chips on every result, and a score ring with a bar showing how the points add up.
+- **Built to scan, calm to read.** One accent colour and one typeface. Score tiles, evidence chips on every result, and a score ring with a bar showing how the points add up.
+- **English and Turkish.** The language follows the visitor's region (Turkish in Turkey, English elsewhere) and can be switched in the header. Evidence lines are written from structured facts, so they read naturally in both languages.
+- **Match your CV, privately.** Drop in an English PDF CV: it is read in your browser, never uploaded, and the skills found are compared with each job. Results rank by fit, and every job page shows which of its skills you have.
 - **Search that stays shareable.** Filters live in the URL: country, keywords, minimum score, posting date, remote.
 - **RSS alerts.** One feed per country and score level, with no account or email needed.
 - **Fresh twice a day,** and redeployed within minutes of a merged change.
 - **Light and dark.** Follows your system setting, with a toggle that remembers your choice.
-- **No personal data.** No accounts, cookies, tracking or forms.
+- **Free, and no personal data.** No accounts, cookies or tracking. The only thing kept is your skills list, in your own browser.
 
 <p align="center"><img src=".github/assets/mobile.png" alt="Search and job pages on a phone (390px)" width="560"></p>
 
@@ -109,7 +111,7 @@ From a full pipeline run on 2026-11-01:
 | Company matching (automatic rules) | **100% precision · 81.8% recall** on 100 hand-labelled pairs |
 | Duplicate postings folded          | **1,179** into 660 roles                                     |
 | Full refresh of all boards         | **75 s** (down from 37 min)                                  |
-| Tests                              | **262**, plus an end-to-end smoke test                       |
+| Tests                              | **334**, plus an end-to-end smoke test                       |
 
 ## Engineering highlights
 
@@ -122,6 +124,7 @@ From a full pipeline run on 2026-11-01:
 - **End-to-end smoke test in CI.** Every pull request runs the real pipeline twice on fixtures, fully offline: a test-only `fetch` stub answers the API calls and fails any other request. About 3 seconds.
 - **Safe output.** All job-board text is treated as untrusted: React escapes it, RSS goes through an XML escaper, and only http(s) links are kept.
 - **Accessible and private by design.** Real buttons and labelled inputs, 44px touch targets, visible focus, reduced-motion support, and self-hosted fonts, so a visit makes no third-party requests.
+- **Privacy by architecture.** CV matching runs entirely in the browser: pdf.js reads the PDF, a skill taxonomy extracts the skills, and only that list is kept, in the visitor's own storage. No CV ever reaches a server.
 - **Decisions on record.** Every architectural choice is written down as a decision record, and work goes through small, CI-gated pull requests.
 
 ## Tech stack
@@ -129,10 +132,11 @@ From a full pipeline run on 2026-11-01:
 | Area       | Choice                                                                                    |
 | ---------- | ----------------------------------------------------------------------------------------- |
 | Language   | TypeScript (strict) on Node 24, run directly without a build step                         |
-| Monorepo   | pnpm workspaces: core logic, pipeline, web                                                |
+| Monorepo   | pnpm workspaces: core logic, pipeline, web, API                                           |
 | Validation | Zod                                                                                       |
 | Storage    | SQLite via `node:sqlite`                                                                  |
-| Web        | React 19 + Vite, plain CSS with design tokens, light and dark themes                      |
+| Web        | React 19 + Vite, plain CSS with design tokens, light and dark themes, English and Turkish |
+| API (v1)   | Fastify, Kysely + Postgres, Testcontainers. Built and tested, not deployed yet            |
 | Testing    | Vitest, Testing Library, jsdom, plus an offline end-to-end smoke test                     |
 | Quality    | ESLint, Prettier, CodeQL, dependency review                                               |
 | Automation | GitHub Actions: CI on every PR, pipeline twice a day and on merge, deploy to GitHub Pages |
@@ -142,18 +146,20 @@ From a full pipeline run on 2026-11-01:
 - **Public, keyless endpoints only:** the Greenhouse, Lever and Ashby job board APIs, and the IND public register. No LinkedIn or Indeed, no scraping behind logins.
 - **Metadata plus a link out.** Full job descriptions are never stored or republished.
 - **IND attribution** on every piece of evidence, as the IND's reuse terms require.
-- **Corrections and removal on request.**
+- **Corrections and removal on request,** through the [correction form](https://github.com/ilker-ekin/hadijob/issues/new/choose).
 
 ## Roadmap
 
 - [x] Ingestion, IND register and company matching
 - [x] Explainable scoring, dedup, RSS feeds and the static site
 - [x] Automated pipeline and deploys, end-to-end smoke test
-- [x] HadiJob redesign with light and dark themes
+- [x] HadiJob redesign with light and dark themes, then a calmer visual style
+- [x] English and Turkish, with evidence written in the visitor's language
+- [x] CV matching in the browser: skills from your CV, jobs ranked by fit
+- [x] v1 API foundations: sign-in and the job API (built, not deployed)
 - [ ] Public launch on its own domain
 - [ ] More countries and sponsor registers
-- [ ] Accounts, saved searches and email digests
-- [ ] CV upload and jobs ranked by fit to your CV
+- [ ] Deploy the API, then saved searches and email digests
 
 ## License
 
