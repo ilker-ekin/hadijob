@@ -38,7 +38,7 @@ HadiJob checks **public evidence** instead: government sponsor registers, what t
 ## Features
 
 - **Explainable scores.** Every point has a reason you can check: "IND recognised sponsor +40", "posting mentions a relocation package +30", "salary ≥ Blue Card threshold +15". No black box.
-- **Official sponsor evidence.** The Dutch IND public register of recognised sponsors (13,000+ organisations), matched to employers with 100% precision on a hand-labelled set.
+- **Official sponsor evidence.** The Dutch IND public register of recognised sponsors (13,000+ organisations) and the Irish list of employment permits issued to companies (9,000+ employers in the last 12 months), matched to employers with 100% precision on a hand-labelled set.
 - **Reads the posting for you.** Sponsorship offers, relocation packages and "no sponsorship" rule-outs, with negation handled ("we do _not_ offer visa sponsorship").
 - **Salary against real thresholds.** 2026 work-permit minimums for Germany, the Netherlands and Ireland, comparing base salary only (commission and deal sizes are ignored).
 - **Built to scan, calm to read.** One accent colour and one typeface. Score tiles, evidence chips on every result, and a score ring with a bar showing how the points add up.
@@ -61,18 +61,19 @@ flowchart LR
     LV[Lever API]
     AB[Ashby API]
     IND[IND sponsor register]
+    DETE[Irish permits list]
   end
   subgraph Pipeline["Pipeline · GitHub Actions, twice a day"]
     I[Ingest<br/>facts: country · salary · phrases]
     R[Resolve<br/>company ↔ register]
-    S[Score<br/>rules v1 + evidence]
+    S[Score<br/>rules v2 + evidence]
     D[Dedup<br/>one job per country]
     E[Export<br/>JSON · RSS · metrics]
   end
   DB[(SQLite)]
   Web[Static site<br/>GitHub Pages]
   GH & LV & AB --> I
-  IND --> R
+  IND & DETE --> R
   I --> DB --> R --> S --> D --> E --> Web
 ```
 
@@ -84,34 +85,37 @@ flowchart LR
 
 Between runs, the SQLite database is kept as a release asset, so first/last-seen dates, ETags and closed jobs carry over. No server and no database server: it runs for €0.
 
-### Scoring rules (v1)
+### Scoring rules (v2)
 
-| Signal                                                             | Weight  |
-| ------------------------------------------------------------------ | ------- |
-| Company is an IND recognised sponsor (NL jobs)                     | **+40** |
-| Posting mentions visa sponsorship, relocation or the EU Blue Card  | **+30** |
-| Posting rules out sponsorship / requires an existing right to work | **−60** |
-| Salary ≥ country threshold (DE €45,934 · NL €52,284 · IE €40,904)  | **+15** |
-| Large company (≥ 50 open jobs in ≥ 2 countries)                    | **+10** |
-| English posting in Germany or the Netherlands                      | **+5**  |
+| Signal                                                                      | Weight  |
+| --------------------------------------------------------------------------- | ------- |
+| Company is an IND recognised sponsor (NL jobs)                              | **+40** |
+| Company was issued Irish employment permits in the last 12 months (IE jobs) | **+40** |
+| Posting mentions visa sponsorship, relocation or the EU Blue Card           | **+30** |
+| Posting rules out sponsorship / requires an existing right to work          | **−60** |
+| Salary ≥ country threshold (DE €45,934 · NL €52,284 · IE €40,904)           | **+15** |
+| Large company (≥ 50 open jobs in ≥ 2 countries)                             | **+10** |
+| English posting in Germany or the Netherlands                               | **+5**  |
 
 Scores are **likelihoods, not guarantees and not legal advice**.
 
 ## By the numbers
 
-From a full pipeline run on 2026-11-01:
+From a full pipeline run on 2026-11-03:
 
 |                                    |                                                              |
 | ---------------------------------- | ------------------------------------------------------------ |
 | Job boards                         | **135** (Greenhouse 72 · Ashby 54 · Lever 9)                 |
 | Open jobs processed                | **15,952**                                                   |
-| Published (DE · NL · IE)           | **1,580 · 584 · 430**                                        |
+| Published (DE · NL · IE)           | **1,585 · 582 · 444**                                        |
 | IND register entries               | **13,022**                                                   |
-| Employers with sponsor evidence    | **48** of 135                                                |
+| Irish permits list                 | **9,345** employers (12 months to September 2026)            |
+| Irish jobs with register evidence  | **323** of 444                                               |
+| Employers with sponsor evidence    | **56** of 135                                                |
 | Company matching (automatic rules) | **100% precision · 81.8% recall** on 100 hand-labelled pairs |
-| Duplicate postings folded          | **1,179** into 660 roles                                     |
+| Duplicate postings folded          | **1,190** into 655 roles                                     |
 | Full refresh of all boards         | **75 s** (down from 37 min)                                  |
-| Tests                              | **334**, plus an end-to-end smoke test                       |
+| Tests                              | **351**, plus an end-to-end smoke test                       |
 
 ## Engineering highlights
 
@@ -124,6 +128,7 @@ From a full pipeline run on 2026-11-01:
 - **End-to-end smoke test in CI.** Every pull request runs the real pipeline twice on fixtures, fully offline: a test-only `fetch` stub answers the API calls and fails any other request. About 3 seconds.
 - **Safe output.** All job-board text is treated as untrusted: React escapes it, RSS goes through an XML escaper, and only http(s) links are kept.
 - **Accessible and private by design.** Real buttons and labelled inputs, 44px touch targets, visible focus, reduced-motion support, and self-hosted fonts, so a visit makes no third-party requests.
+- **A government spreadsheet without a dependency.** The Irish permits list is an XLSX file whose layout and file name change every year. A ~100-line reader unzips it with the web-standard `DecompressionStream`, finds columns by month name, and fails loudly on a changed layout instead of silently dropping employers.
 - **Privacy by architecture.** CV matching runs entirely in the browser: pdf.js reads the PDF, a skill taxonomy extracts the skills, and only that list is kept, in the visitor's own storage. No CV ever reaches a server.
 - **Decisions on record.** Every architectural choice is written down as a decision record, and work goes through small, CI-gated pull requests.
 
@@ -137,20 +142,21 @@ From a full pipeline run on 2026-11-01:
 | Storage    | SQLite via `node:sqlite`                                                                  |
 | Web        | React 19 + Vite, plain CSS with design tokens, light and dark themes, English and Turkish |
 | API (v1)   | Fastify, Kysely + Postgres, Testcontainers. Built and tested, not deployed yet            |
-| Testing    | Vitest, Testing Library, jsdom, plus an offline end-to-end smoke test                     |
+| Testing    | Vitest, Testing Library, jsdom: 351 tests, plus an offline end-to-end smoke test          |
 | Quality    | ESLint, Prettier, CodeQL, dependency review                                               |
 | Automation | GitHub Actions: CI on every PR, pipeline twice a day and on merge, deploy to GitHub Pages |
 
 ## Data sources and ethics
 
-- **Public, keyless endpoints only:** the Greenhouse, Lever and Ashby job board APIs, and the IND public register. No LinkedIn or Indeed, no scraping behind logins.
+- **Public, keyless endpoints only:** the Greenhouse, Lever and Ashby job board APIs, the IND public register and the Irish DETE permit statistics. No LinkedIn or Indeed, no scraping behind logins.
 - **Metadata plus a link out.** Full job descriptions are never stored or republished.
-- **IND attribution** on every piece of evidence, as the IND's reuse terms require.
+- **Attribution** on every piece of evidence, as the IND's reuse terms and the Irish PSI licence require.
 - **Corrections and removal on request,** through the [correction form](https://github.com/ilker-ekin/hadijob/issues/new/choose).
 
 ## Roadmap
 
 - [x] Ingestion, IND register and company matching
+- [x] Irish employment permits as sponsor evidence (rules v2)
 - [x] Explainable scoring, dedup, RSS feeds and the static site
 - [x] Automated pipeline and deploys, end-to-end smoke test
 - [x] HadiJob redesign with light and dark themes, then a calmer visual style
