@@ -44,7 +44,7 @@ HadiJob checks **public evidence** instead: government sponsor registers, what t
 - **Built to scan, calm to read.** One accent colour and one typeface. Score tiles, evidence chips on every result, and a score ring with a bar showing how the points add up.
 - **English and Turkish.** The language follows the visitor's region (Turkish in Turkey, English elsewhere) and can be switched in the header. Evidence lines are written from structured facts, so they read naturally in both languages.
 - **Match your CV, privately.** Drop in an English PDF CV: it is read in your browser, never uploaded, and the skills found are compared with each job. Results rank by fit, and every job page shows which of its skills you have.
-- **Search that stays shareable.** Filters live in the URL: country, keywords, minimum score, posting date, remote.
+- **Search that stays shareable.** Filters and sorting live in the URL: country, keywords, minimum score, posting date, remote, and sort by strongest evidence, newest or highest salary.
 - **Fresh twice a day,** and redeployed within minutes of a merged change.
 - **Light and dark.** Follows your system setting, with a toggle that remembers your choice.
 - **Free, and no personal data.** No accounts, cookies or tracking. The only thing kept is your skills list, in your own browser.
@@ -78,7 +78,7 @@ flowchart LR
 ```
 
 1. **Ingest:** about 135 company job boards are fetched politely. Each job gets its _facts_ at ingest time: country, remote, yearly salary, posting language and sponsorship phrases. Descriptions are never stored; anything derived from the text happens while it is in memory.
-2. **Resolve:** each employer is matched to the IND register. Exact names link automatically, near-matches go to a review list, and human decisions are recorded in version control.
+2. **Resolve:** each employer is matched to the IND register, the Irish permits list and the UK register. Exact names link automatically, near-matches go to a review list, and human decisions are recorded in version control.
 3. **Score:** versioned, explainable rules. A score starts at 0, adds each signal's weight and is clamped to 0–100.
 4. **Dedup:** the same role posted in several cities of one country is shown once.
 5. **Export:** JSON per country for the static site and a metrics file. The site is built and deployed to GitHub Pages after every run.
@@ -102,21 +102,23 @@ Scores are **likelihoods, not guarantees and not legal advice**.
 
 ## By the numbers
 
-From a full pipeline run on 2026-11-03:
+From a full pipeline run on 2026-11-04:
 
-|                                    |                                                              |
-| ---------------------------------- | ------------------------------------------------------------ |
-| Job boards                         | **135** (Greenhouse 72 · Ashby 54 · Lever 9)                 |
-| Open jobs processed                | **15,952**                                                   |
-| Published (DE · NL · IE)           | **1,585 · 582 · 444**                                        |
-| IND register entries               | **13,022**                                                   |
-| Irish permits list                 | **9,345** employers (12 months to September 2026)            |
-| Irish jobs with register evidence  | **323** of 444                                               |
-| Employers with sponsor evidence    | **56** of 135                                                |
-| Company matching (automatic rules) | **100% precision · 81.8% recall** on 100 hand-labelled pairs |
-| Duplicate postings folded          | **1,190** into 655 roles                                     |
-| Full refresh of all boards         | **75 s** (down from 37 min)                                  |
-| Tests                              | **351**, plus an end-to-end smoke test                       |
+|                                               |                                                                                                |
+| --------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| Job boards                                    | **135** (Greenhouse 72 · Ashby 54 · Lever 9)                                                   |
+| Open jobs processed                           | **16,005**                                                                                     |
+| Published, 9 countries                        | **4,708** (DE 1,511 · GB 1,195 · NL 572 · IE 415 · FR 397 · ES 252 · SE 131 · PL 127 · IT 108) |
+| IND register entries                          | **13,022**                                                                                     |
+| UK register (A-rated Skilled Worker sponsors) | **121,488** (updated 2026-11-04)                                                               |
+| Irish permits list                            | **9,345** employers (12 months to September 2026)                                              |
+| Jobs with register evidence                   | **UK 1,016 of 1,195 · NL 525 of 572 · IE 313 of 415**                                          |
+| Employers with sponsor evidence               | **78** of 135                                                                                  |
+| Company matching (automatic rules)            | **100% precision · 81.8% recall** on 100 hand-labelled pairs                                   |
+| UK matching (name + town rule)                | **100% precision · 75% recall** on 37 hand-labelled pairs                                      |
+| Duplicate postings folded                     | **1,206** into 658 roles                                                                       |
+| Full refresh of all boards                    | **75 s** (down from 37 min)                                                                    |
+| Tests                                         | **369**, plus an end-to-end smoke test                                                         |
 
 ## Engineering highlights
 
@@ -128,6 +130,7 @@ From a full pipeline run on 2026-11-03:
 - **Checked against reality.** Running each extractor on live postings caught false positives the unit tests didn't, for example "deals of £100k+ ACV" read as a salary, or "Visa sponsorship is not offered" counted as a mention. Every one became a regression test.
 - **End-to-end smoke test in CI.** Every pull request runs the real pipeline twice on fixtures, fully offline: a test-only `fetch` stub answers the API calls and fails any other request. About 3 seconds.
 - **Safe output.** All job-board text is treated as untrusted: React escapes it, and only http(s) links are kept.
+- **Hardened by default.** A Content-Security-Policy with no inline or eval scripts (added at build time, inline scripts allowed only by hash), GitHub Actions pinned to commit SHAs, weekly Dependabot updates, dependency review and CodeQL on every pull request.
 - **Accessible and private by design.** Real buttons and labelled inputs, 44px touch targets, visible focus, reduced-motion support, and self-hosted fonts, so a visit makes no third-party requests.
 - **Two pieces of evidence for the UK.** Exact-name matching produced 2 false links out of 17 on the UK register's 121,000 names ("Cursor Ltd" in Lincoln is not Cursor). A UK entry now links only when its name is the brand plus legal or region words _and_ one of its register towns is a city where the company hires: 100% precision on 37 hand-labelled pairs, which run as a test in CI.
 - **A government spreadsheet without a dependency.** The Irish permits list is an XLSX file whose layout and file name change every year. A ~100-line reader unzips it with the web-standard `DecompressionStream`, finds columns by month name, and fails loudly on a changed layout instead of silently dropping employers.
@@ -144,7 +147,7 @@ From a full pipeline run on 2026-11-03:
 | Storage    | SQLite via `node:sqlite`                                                                  |
 | Web        | React 19 + Vite, plain CSS with design tokens, light and dark themes, English and Turkish |
 | API (v1)   | Fastify, Kysely + Postgres, Testcontainers. Built and tested, not deployed yet            |
-| Testing    | Vitest, Testing Library, jsdom: 351 tests, plus an offline end-to-end smoke test          |
+| Testing    | Vitest, Testing Library, jsdom: 369 tests, plus an offline end-to-end smoke test          |
 | Quality    | ESLint, Prettier, CodeQL, dependency review                                               |
 | Automation | GitHub Actions: CI on every PR, pipeline twice a day and on merge, deploy to GitHub Pages |
 
