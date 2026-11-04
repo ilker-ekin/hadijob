@@ -6,7 +6,7 @@
 
 **How likely is this EU job to sponsor your visa?**
 
-Open jobs at tech companies in Germany, the Netherlands and Ireland, scored 0–100 for visa sponsorship, with the public evidence behind each score. In English and Turkish.
+Open jobs at tech companies in 8 EU countries and the UK, scored 0–100 for visa sponsorship, with the public evidence behind each score. In English and Turkish.
 
 _"Hadi!" is Turkish for "come on, let's go"._
 
@@ -38,9 +38,9 @@ HadiJob checks **public evidence** instead: government sponsor registers, what t
 ## Features
 
 - **Explainable scores.** Every point has a reason you can check: "IND recognised sponsor +40", "posting mentions a relocation package +30", "salary ≥ Blue Card threshold +15". No black box.
-- **Official sponsor evidence.** The Dutch IND public register of recognised sponsors (13,000+ organisations) and the Irish list of employment permits issued to companies (9,000+ employers in the last 12 months), matched to employers with 100% precision on a hand-labelled set.
+- **Official sponsor evidence.** The Dutch IND public register of recognised sponsors (13,000+ organisations) and the Irish list of employment permits issued to companies (9,000+ employers in the last 12 months) and the UK register of licensed sponsors (121,000 Skilled Worker sponsors), matched to employers with 100% precision on a hand-labelled set.
 - **Reads the posting for you.** Sponsorship offers, relocation packages and "no sponsorship" rule-outs, with negation handled ("we do _not_ offer visa sponsorship").
-- **Salary against real thresholds.** 2026 work-permit minimums for Germany, the Netherlands and Ireland, comparing base salary only (commission and deal sizes are ignored).
+- **Salary against real thresholds.** 2026 work-permit minimums for each country in its own currency (euro, pound, krona, złoty), comparing base salary only (commission and deal sizes are ignored).
 - **Built to scan, calm to read.** One accent colour and one typeface. Score tiles, evidence chips on every result, and a score ring with a bar showing how the points add up.
 - **English and Turkish.** The language follows the visitor's region (Turkish in Turkey, English elsewhere) and can be switched in the header. Evidence lines are written from structured facts, so they read naturally in both languages.
 - **Match your CV, privately.** Drop in an English PDF CV: it is read in your browser, never uploaded, and the skills found are compared with each job. Results rank by fit, and every job page shows which of its skills you have.
@@ -61,18 +61,19 @@ flowchart LR
     AB[Ashby API]
     IND[IND sponsor register]
     DETE[Irish permits list]
+    UK[UK sponsor register]
   end
   subgraph Pipeline["Pipeline · GitHub Actions, twice a day"]
     I[Ingest<br/>facts: country · salary · phrases]
     R[Resolve<br/>company ↔ register]
-    S[Score<br/>rules v2 + evidence]
+    S[Score<br/>rules v3 + evidence]
     D[Dedup<br/>one job per country]
     E[Export<br/>JSON · metrics]
   end
   DB[(SQLite)]
   Web[Static site<br/>GitHub Pages]
   GH & LV & AB --> I
-  IND & DETE --> R
+  IND & DETE & UK --> R
   I --> DB --> R --> S --> D --> E --> Web
 ```
 
@@ -84,17 +85,18 @@ flowchart LR
 
 Between runs, the SQLite database is kept as a release asset, so first/last-seen dates, ETags and closed jobs carry over. No server and no database server: it runs for €0.
 
-### Scoring rules (v2)
+### Scoring rules (v3)
 
-| Signal                                                                      | Weight  |
-| --------------------------------------------------------------------------- | ------- |
-| Company is an IND recognised sponsor (NL jobs)                              | **+40** |
-| Company was issued Irish employment permits in the last 12 months (IE jobs) | **+40** |
-| Posting mentions visa sponsorship, relocation or the EU Blue Card           | **+30** |
-| Posting rules out sponsorship / requires an existing right to work          | **−60** |
-| Salary ≥ country threshold (DE €45,934 · NL €52,284 · IE €40,904)           | **+15** |
-| Large company (≥ 50 open jobs in ≥ 2 countries)                             | **+10** |
-| English posting in Germany or the Netherlands                               | **+5**  |
+| Signal                                                                                     | Weight  |
+| ------------------------------------------------------------------------------------------ | ------- |
+| Company is an IND recognised sponsor (NL jobs)                                             | **+40** |
+| Company was issued Irish employment permits in the last 12 months (IE jobs)                | **+40** |
+| Company is an A-rated Skilled Worker sponsor on the UK register (UK jobs)                  | **+40** |
+| Posting mentions visa sponsorship, relocation or the EU Blue Card                          | **+30** |
+| Posting rules out sponsorship / requires an existing right to work                         | **−60** |
+| Salary ≥ country threshold (e.g. DE €45,934 · NL €52,284 · UK £41,700; none for Italy yet) | **+15** |
+| Large company (≥ 50 open jobs in ≥ 2 countries)                                            | **+10** |
+| English posting in a non-English country (DE, NL, FR, ES, IT, SE, PL)                      | **+5**  |
 
 Scores are **likelihoods, not guarantees and not legal advice**.
 
@@ -127,6 +129,7 @@ From a full pipeline run on 2026-11-03:
 - **End-to-end smoke test in CI.** Every pull request runs the real pipeline twice on fixtures, fully offline: a test-only `fetch` stub answers the API calls and fails any other request. About 3 seconds.
 - **Safe output.** All job-board text is treated as untrusted: React escapes it, and only http(s) links are kept.
 - **Accessible and private by design.** Real buttons and labelled inputs, 44px touch targets, visible focus, reduced-motion support, and self-hosted fonts, so a visit makes no third-party requests.
+- **Two pieces of evidence for the UK.** Exact-name matching produced 2 false links out of 17 on the UK register's 121,000 names ("Cursor Ltd" in Lincoln is not Cursor). A UK entry now links only when its name is the brand plus legal or region words _and_ one of its register towns is a city where the company hires: 100% precision on 37 hand-labelled pairs, which run as a test in CI.
 - **A government spreadsheet without a dependency.** The Irish permits list is an XLSX file whose layout and file name change every year. A ~100-line reader unzips it with the web-standard `DecompressionStream`, finds columns by month name, and fails loudly on a changed layout instead of silently dropping employers.
 - **Privacy by architecture.** CV matching runs entirely in the browser: pdf.js reads the PDF, a skill taxonomy extracts the skills, and only that list is kept, in the visitor's own storage. No CV ever reaches a server.
 - **Decisions on record.** Every architectural choice is written down as a decision record, and work goes through small, CI-gated pull requests.
@@ -156,6 +159,7 @@ From a full pipeline run on 2026-11-03:
 
 - [x] Ingestion, IND register and company matching
 - [x] Irish employment permits as sponsor evidence (rules v2)
+- [x] Six more countries (UK, France, Spain, Italy, Sweden, Poland) and the UK sponsor register (rules v3)
 - [x] Explainable scoring, dedup and the static site
 - [x] Automated pipeline and deploys, end-to-end smoke test
 - [x] HadiJob redesign with light and dark themes, then a calmer visual style
@@ -163,7 +167,7 @@ From a full pipeline run on 2026-11-03:
 - [x] CV matching in the browser: skills from your CV, jobs ranked by fit
 - [x] v1 API foundations: sign-in and the job API (built, not deployed)
 - [ ] Public launch on its own domain
-- [ ] More countries and sponsor registers
+- [ ] More countries and sponsor registers (next: Denmark, Portugal, Austria)
 - [ ] Deploy the API, then saved searches and email digests
 
 ## License
