@@ -16,7 +16,7 @@ _"Hadi!" is Turkish for "come on, let's go"._
 ![SQLite](https://img.shields.io/badge/SQLite-node%3Asqlite-003b57?logo=sqlite&logoColor=white)
 ![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-pipeline_%26_CI-2088ff?logo=githubactions&logoColor=white)
 
-**[Try it →](https://ilker-ekin.github.io/visa-sponsor-radar-eu/)** (testing phase, feedback welcome)
+**[Try it at hadijob.com →](https://hadijob.com/)** (testing phase, feedback welcome)
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset=".github/assets/home-dark.png">
@@ -45,7 +45,6 @@ HadiJob checks **public evidence** instead: government sponsor registers, what t
 - **English and Turkish.** The language follows the visitor's region (Turkish in Turkey, English elsewhere) and can be switched in the header. Evidence lines are written from structured facts, so they read naturally in both languages.
 - **Match your CV, privately.** Drop in an English PDF CV: it is read in your browser, never uploaded, and the skills found are compared with each job. Results rank by fit, and every job page shows which of its skills you have.
 - **Search that stays shareable.** Filters live in the URL: country, keywords, minimum score, posting date, remote.
-- **RSS alerts.** One feed per country and score level, with no account or email needed.
 - **Fresh twice a day,** and redeployed within minutes of a merged change.
 - **Light and dark.** Follows your system setting, with a toggle that remembers your choice.
 - **Free, and no personal data.** No accounts, cookies or tracking. The only thing kept is your skills list, in your own browser.
@@ -68,7 +67,7 @@ flowchart LR
     R[Resolve<br/>company ↔ register]
     S[Score<br/>rules v2 + evidence]
     D[Dedup<br/>one job per country]
-    E[Export<br/>JSON · RSS · metrics]
+    E[Export<br/>JSON · metrics]
   end
   DB[(SQLite)]
   Web[Static site<br/>GitHub Pages]
@@ -81,7 +80,7 @@ flowchart LR
 2. **Resolve:** each employer is matched to the IND register. Exact names link automatically, near-matches go to a review list, and human decisions are recorded in version control.
 3. **Score:** versioned, explainable rules. A score starts at 0, adds each signal's weight and is clamped to 0–100.
 4. **Dedup:** the same role posted in several cities of one country is shown once.
-5. **Export:** JSON per country for the static site, RSS feeds and a metrics file. The site is built and deployed to GitHub Pages after every run.
+5. **Export:** JSON per country for the static site and a metrics file. The site is built and deployed to GitHub Pages after every run.
 
 Between runs, the SQLite database is kept as a release asset, so first/last-seen dates, ETags and closed jobs carry over. No server and no database server: it runs for €0.
 
@@ -126,7 +125,7 @@ From a full pipeline run on 2026-11-03:
 - **Precision first.** Company matching only auto-links exact names; everything else needs a recorded human decision. On 100 hand-labelled pairs, including 45 deliberate look-alikes (Toast vs. "Yoast B.V."), the automatic rules scored 100% precision and 81.8% recall; the 10 misses were confirmed by human review, and the review list was widened so similar cases now surface for review.
 - **Checked against reality.** Running each extractor on live postings caught false positives the unit tests didn't, for example "deals of £100k+ ACV" read as a salary, or "Visa sponsorship is not offered" counted as a mention. Every one became a regression test.
 - **End-to-end smoke test in CI.** Every pull request runs the real pipeline twice on fixtures, fully offline: a test-only `fetch` stub answers the API calls and fails any other request. About 3 seconds.
-- **Safe output.** All job-board text is treated as untrusted: React escapes it, RSS goes through an XML escaper, and only http(s) links are kept.
+- **Safe output.** All job-board text is treated as untrusted: React escapes it, and only http(s) links are kept.
 - **Accessible and private by design.** Real buttons and labelled inputs, 44px touch targets, visible focus, reduced-motion support, and self-hosted fonts, so a visit makes no third-party requests.
 - **A government spreadsheet without a dependency.** The Irish permits list is an XLSX file whose layout and file name change every year. A ~100-line reader unzips it with the web-standard `DecompressionStream`, finds columns by month name, and fails loudly on a changed layout instead of silently dropping employers.
 - **Privacy by architecture.** CV matching runs entirely in the browser: pdf.js reads the PDF, a skill taxonomy extracts the skills, and only that list is kept, in the visitor's own storage. No CV ever reaches a server.
@@ -157,7 +156,7 @@ From a full pipeline run on 2026-11-03:
 
 - [x] Ingestion, IND register and company matching
 - [x] Irish employment permits as sponsor evidence (rules v2)
-- [x] Explainable scoring, dedup, RSS feeds and the static site
+- [x] Explainable scoring, dedup and the static site
 - [x] Automated pipeline and deploys, end-to-end smoke test
 - [x] HadiJob redesign with light and dark themes, then a calmer visual style
 - [x] English and Turkish, with evidence written in the visitor's language
