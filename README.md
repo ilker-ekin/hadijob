@@ -168,7 +168,7 @@ From a full pipeline run on 2026-11-04:
 - [x] HadiJob redesign with light and dark themes, then a calmer visual style
 - [x] English and Turkish, with evidence written in the visitor's language
 - [x] CV matching in the browser: skills from your CV, jobs ranked by fit
-- [x] v1 API foundations: sign-in and the job API (built, not deployed)
+- [x] v1 API: server-side job search, with the site falling back to static files
 - [x] Live on its own domain: hadijob.com
 - [ ] More countries and sponsor registers (next: Denmark, Portugal, Austria)
 - [ ] Deploy the search API on AWS Lambda + Neon (€0, no accounts)
