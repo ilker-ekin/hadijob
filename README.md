@@ -172,7 +172,7 @@ From a full pipeline run on 2026-11-04:
 - [x] Live on its own domain: hadijob.com
 - [ ] More countries and sponsor registers (next: Denmark, Portugal, Austria)
 - [ ] Deploy the search API on AWS Lambda + Neon (€0, no accounts)
-- [ ] Privacy-first visitor counts: no cookies, no tracking
+- [ ] A public stats page with privacy-first visitor counts: no cookies, no tracking, bots filtered
 
 ## License
 
