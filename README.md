@@ -169,9 +169,10 @@ From a full pipeline run on 2026-11-04:
 - [x] English and Turkish, with evidence written in the visitor's language
 - [x] CV matching in the browser: skills from your CV, jobs ranked by fit
 - [x] v1 API foundations: sign-in and the job API (built, not deployed)
-- [ ] Public launch on its own domain
+- [x] Live on its own domain: hadijob.com
 - [ ] More countries and sponsor registers (next: Denmark, Portugal, Austria)
-- [ ] Deploy the API, then saved searches and email digests
+- [ ] Deploy the search API on AWS Lambda + Neon (€0, no accounts)
+- [ ] Privacy-first visitor counts: no cookies, no tracking
 
 ## License
 
