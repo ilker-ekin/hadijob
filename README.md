@@ -41,7 +41,7 @@ HadiJob checks **public evidence** instead: government sponsor registers, what t
 - **Official sponsor evidence.** The Dutch IND public register of recognised sponsors (13,000+ organisations) and the Irish list of employment permits issued to companies (9,000+ employers in the last 12 months) and the UK register of licensed sponsors (121,000 Skilled Worker sponsors), matched to employers with 100% precision on a hand-labelled set.
 - **Reads the posting for you.** Sponsorship offers, relocation packages and "no sponsorship" rule-outs, with negation handled ("we do _not_ offer visa sponsorship").
 - **Salary against real thresholds.** 2026 work-permit minimums for each country in its own currency (euro, pound, krona, złoty), comparing base salary only (commission and deal sizes are ignored).
-- **Built to scan, calm to read.** One accent colour and one typeface. Score tiles, evidence chips on every result, and a score ring with a bar showing how the points add up.
+- **Search first, in plain words.** One search bar (what, where, how strong the evidence) on a bold indigo band, with the first jobs right under it. Each job card gives its score and three plain-language reasons, and the job page shows a score ring with a bar of how the points add up.
 - **English and Turkish.** The language follows the visitor's region (Turkish in Turkey, English elsewhere) and can be switched in the header. Evidence lines are written from structured facts, so they read naturally in both languages.
 - **Match your CV, privately.** Drop in an English PDF CV: it is read in your browser, never uploaded, and the skills found are compared with each job. Results rank by fit, and every job page shows which of its skills you have.
 - **Search that stays shareable.** Filters and sorting live in the URL: country, keywords, minimum score, posting date, remote, and sort by strongest evidence, newest or highest salary.
@@ -118,7 +118,7 @@ From a full pipeline run on 2026-11-04:
 | UK matching (name + town rule)                | **100% precision · 75% recall** on 37 hand-labelled pairs                                      |
 | Duplicate postings folded                     | **1,206** into 658 roles                                                                       |
 | Full refresh of all boards                    | **75 s** (down from 37 min)                                                                    |
-| Tests                                         | **369**, plus an end-to-end smoke test                                                         |
+| Tests                                         | **449**, plus an end-to-end smoke test                                                         |
 
 ## Engineering highlights
 
@@ -147,7 +147,7 @@ From a full pipeline run on 2026-11-04:
 | Storage    | SQLite via `node:sqlite`                                                                  |
 | Web        | React 19 + Vite, plain CSS with design tokens, light and dark themes, English and Turkish |
 | API (v1)   | Fastify, Kysely + Postgres, Testcontainers. Built and tested, not deployed yet            |
-| Testing    | Vitest, Testing Library, jsdom: 369 tests, plus an offline end-to-end smoke test          |
+| Testing    | Vitest, Testing Library, jsdom: 449 tests, plus an offline end-to-end smoke test          |
 | Quality    | ESLint, Prettier, CodeQL, dependency review                                               |
 | Automation | GitHub Actions: CI on every PR, pipeline twice a day and on merge, deploy to GitHub Pages |
 
@@ -166,11 +166,18 @@ From a full pipeline run on 2026-11-04:
 - [x] Explainable scoring, dedup and the static site
 - [x] Automated pipeline and deploys, end-to-end smoke test
 - [x] HadiJob redesign with light and dark themes, then a calmer visual style
+- [x] Colourful, search-first redesign: one search bar and plain-language job cards
 - [x] English and Turkish, with evidence written in the visitor's language
 - [x] CV matching in the browser: skills from your CV, jobs ranked by fit
 - [x] v1 API: server-side job search, with the site falling back to static files
 - [x] Live on its own domain: hadijob.com
-- [ ] More countries and sponsor registers (next: Denmark, Portugal, Austria)
+- [ ] Search across all countries at once, or the EU only
+- [ ] More employers, found through the sponsor registers
+- [ ] Every role, not only tech: job categories from the title, with a category filter
+- [ ] The rest of Europe (Switzerland, Portugal, Denmark, Austria and more), after better location parsing
+- [ ] Evidence across borders: a registered sponsor in one country counts, at half weight, where there is no register
+- [ ] Company and country pages that search engines can index
+- [ ] "New since your last visit", kept only in your browser
 - [ ] Deploy the search API on AWS Lambda + Neon (€0, no accounts)
 - [ ] A public stats page with privacy-first visitor counts: no cookies, no tracking, bots filtered
 
