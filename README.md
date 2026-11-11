@@ -48,9 +48,9 @@ HadiJob checks **public evidence** instead and turns it into a score you can rea
 **Understand**
 
 - **Every point has a reason.** "IND recognised sponsor +40", "posting mentions a relocation package +30", "salary ≥ Blue Card threshold +15". No black box.
-- **"Does this company sponsor visas?"** Each employer has its own page with the registers that list it and its open jobs per country.
+- **"Does this company sponsor visas?"** Each employer has its own page in the app, with the registers that list it and its scored jobs, filterable by country.
 
-<img src=".github/assets/company.png" alt="Company page: Does Mollie sponsor visas? It lists the IND and UK registers and the open jobs per country with their strongest evidence" width="820">
+<img src=".github/assets/company.png" alt="Company page: Does Mollie sponsor visas? It lists the IND and UK registers, a filter per country and Mollie's scored jobs" width="820">
 
 **Personalise**
 
