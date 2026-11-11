@@ -42,13 +42,13 @@ HadiJob checks **public evidence** instead and turns it into a score you can rea
 **Find**
 
 - **Search 21 countries at once,** the EU only, one country, or **Europe-wide** remote roles. Filter by **category** (Engineering, Data, Sales, Marketing and more), evidence strength, posting date and remote.
-- **See what's new since your last visit.** New jobs are marked, and one switch shows only those. The date stays in your browser.
+- **See what's new since your last visit.** Turn on "Remember my visits" once: from then on new jobs are marked, and one switch shows only those. Nothing is stored until you turn it on, and the date stays in your browser.
 - **Share any search.** Every filter lives in the link.
 
 **Understand**
 
 - **Every point has a reason.** "IND recognised sponsor +40", "posting mentions a relocation package +30", "salary ≥ Blue Card threshold +15". No black box.
-- **"Does this company sponsor visas?"** Each employer has its own page in the app, with the registers that list it, its open jobs per country with their strongest evidence, and its scored jobs.
+- **"Does this company sponsor visas?"** Each employer has its own page in the app, with the registers that list it, its open jobs per country with their strongest evidence, and its scored jobs. The companies list filters by country.
 
 <img src=".github/assets/company.png" alt="Company page: Does Mollie sponsor visas? It lists the IND and UK registers and a table of open jobs per country that filters Mollie's job cards" width="820">
 
@@ -128,7 +128,7 @@ From the live data on 2026-11-11:
 - **Growing the employer list from the registers.** The registers double as a list of companies known to sponsor. A pilot probed 2,417 register names against three job-board APIs, measured the hit rate per register (0.9% for Dutch sponsors, against 0.3% for Irish permit holders), and kept only boards verified by hand.
 - **Checked against reality.** Running each extractor on live postings caught false positives the unit tests didn't, such as "deals of £100k+ ACV" read as a salary, or "Visa sponsorship is not offered" counted as a mention. Every one became a regression test.
 - **Search engines without a server.** The app uses hash routes, which search engines can't index, so the build pre-renders about 320 company and country pages with `react-dom/server`, in English and Turkish with `hreflang`, plus a sitemap.
-- **Privacy by architecture.** CV matching runs entirely in the browser with pdf.js and a skill taxonomy. "New since your last visit" stores just a date in the browser. There are no accounts, cookies or trackers.
+- **Privacy by architecture.** CV matching runs entirely in the browser with pdf.js and a skill taxonomy. "New since your last visit" stores just a date in the browser, and only after you turn it on. There are no accounts, cookies or trackers.
 - **Hardened by default.** A strict Content-Security-Policy, where the only inline script is allowed by its SHA-256 hash. GitHub Actions are pinned to commit SHAs, with weekly Dependabot updates, dependency review and CodeQL on every pull request.
 - **Runtime-agnostic core and validated boundaries.** The core uses only web-platform APIs and is shared with a Fastify API, and every external response is parsed with Zod. A changed API shape fails loudly for that board, and one bad link drops that job, not the whole board.
 - **A government spreadsheet without a dependency.** The Irish permits list is an XLSX file whose layout changes every year. A ~100-line reader unzips it with the web-standard `DecompressionStream` and fails loudly on a changed layout instead of silently dropping employers.
@@ -162,7 +162,7 @@ From the live data on 2026-11-11:
 - [x] Every kind of role, not only tech, with a category filter
 - [x] Evidence across borders: a sponsor in one country counts, at half weight, where there's no register
 - [x] Company and country pages that search engines can index, in English and Turkish
-- [x] "New since your last visit", kept only in your browser
+- [x] "New since your last visit": opt-in, kept only in your browser
 - [x] CV matching in the browser
 - [x] English and Turkish, light and dark, on its own domain
 
