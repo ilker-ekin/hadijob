@@ -22,9 +22,6 @@ Free, no sign-up, in English and Turkish.
 
 </div>
 
-> [!NOTE]
-> This repository is a showcase. The source code is private; I'm happy to walk through it in an interview or share it on request.
-
 ## Why HadiJob
 
 If you need a visa, most of your applications go to roles that were never going to sponsor you. Job boards don't say, and employers' own wording is vague.
