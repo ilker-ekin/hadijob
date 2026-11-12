@@ -18,7 +18,7 @@ Free, no sign-up, in English and Turkish.
   <img src=".github/assets/home.png" alt="HadiJob search: 5,689 jobs in 21 countries, each with a sponsorship score and three plain-language reasons" width="820">
 </picture>
 
-**5,689 jobs** · **21 countries + Europe-wide remote** · **145 employers** · **3 government sponsor registers** · **updated twice a day**
+**5,733 jobs** · **21 countries + Europe-wide remote** · **145 employers** · **4 government sponsor registers** · **updated twice a day**
 
 </div>
 
@@ -31,7 +31,7 @@ If you need a visa, most of your applications go to roles that were never going 
 
 HadiJob checks **public evidence** instead and turns it into a score you can read in a second and verify in a click:
 
-- 🏛️ **Is the employer a licensed sponsor?** Checked against the Dutch IND register, Ireland's employment-permit statistics and the UK register of licensed sponsors.
+- 🏛️ **Is the employer a licensed sponsor?** Checked against the Dutch IND register, Ireland's employment-permit statistics, the UK register of licensed sponsors and Denmark's list of Fast-track certified companies.
 - 📝 **What does the posting say?** It picks up "visa sponsorship" and "relocation package", and also "you must already have the right to work".
 - 💶 **Does the salary clear the permit threshold?** Compared with 2026 work-permit minimums in each country's own currency.
 
@@ -61,7 +61,7 @@ HadiJob checks **public evidence** instead and turns it into a score you can rea
 
 ## 🇹🇷 Türkçe
 
-HadiJob, Avrupa'daki 5.600'den fazla açık ilanı vize sponsorluğu olasılığına göre puanlar. Hollanda, İrlanda ve Birleşik Krallık'ın resmî sponsor kayıtlarına ve ilanın kendisine bakar, her puanın kanıtını da gösterir. Ücretsiz, üyelik yok, tamamen Türkçe: **[hadijob.com](https://hadijob.com/)**
+HadiJob, Avrupa'daki 5.600'den fazla açık ilanı vize sponsorluğu olasılığına göre puanlar. Hollanda, İrlanda, Birleşik Krallık ve Danimarka'nın resmî sponsor kayıtlarına ve ilanın kendisine bakar, her puanın kanıtını da gösterir. Ücretsiz, üyelik yok, tamamen Türkçe: **[hadijob.com](https://hadijob.com/)**
 
 ## How it works
 
@@ -69,12 +69,12 @@ HadiJob, Avrupa'daki 5.600'den fazla açık ilanı vize sponsorluğu olasılığ
 flowchart LR
   subgraph Sources["Public sources"]
     ATS[Greenhouse · Lever · Ashby<br/>job board APIs]
-    REG[IND · DETE · UK<br/>sponsor registers]
+    REG[IND · DETE · UK · SIRI<br/>sponsor registers]
   end
   subgraph Pipeline["Pipeline · GitHub Actions, twice a day"]
     I[Ingest<br/>country · salary · phrases]
     R[Resolve<br/>employer ↔ register]
-    S[Score<br/>rules v5 + evidence]
+    S[Score<br/>rules v7 + evidence]
     E[Export<br/>JSON · pages · sitemap]
   end
   DB[(SQLite)]
@@ -84,41 +84,41 @@ flowchart LR
 ```
 
 1. **Ingest:** 145 company job boards are fetched politely. Each job's facts (country, remote, salary, language, sponsorship phrases) are extracted while the text is in memory. Descriptions are never stored.
-2. **Resolve:** each employer is matched to the three registers. Exact names link automatically, near-matches go to human review, and every decision is kept in version control.
+2. **Resolve:** each employer is matched to the four registers. Exact names link automatically, near-matches go to human review, and every decision is kept in version control.
 3. **Score:** versioned, explainable rules. A score starts at 0, adds each signal's weight and is clamped to 0–100.
 4. **Export:** one JSON file per country for the site, plus about 320 pre-built company and country pages in both languages.
 
 The whole thing runs for **€0**: no servers and no database server, with the SQLite file kept between runs as a release asset.
 
-### Scoring rules (v5)
+### Scoring rules (v7)
 
-| Signal                                                                           | Weight  |
-| -------------------------------------------------------------------------------- | ------- |
-| Employer is on the country's sponsor register (IND for NL · DETE for IE · UK)    | **+40** |
-| Posting mentions visa sponsorship, relocation or the EU Blue Card                | **+30** |
-| Employer is a registered sponsor in another country (countries with no register) | **+20** |
-| Salary ≥ the country's work-permit threshold (e.g. DE €45,934 · UK £41,700)      | **+15** |
-| Large employer (≥ 50 open jobs in ≥ 2 countries)                                 | **+10** |
-| English posting in a country where English isn't the main language               | **+5**  |
-| Posting rules out sponsorship, or requires an existing right to work             | **−60** |
+| Signal                                                                                      | Weight  |
+| ------------------------------------------------------------------------------------------- | ------- |
+| Employer is on the country's sponsor register (IND for NL · DETE for IE · UK · SIRI for DK) | **+40** |
+| Posting mentions visa sponsorship, relocation or the EU Blue Card                           | **+30** |
+| Employer is a registered sponsor in another country (countries with no register)            | **+20** |
+| Salary ≥ the country's work-permit threshold (e.g. DE €45,934 · UK £41,700)                 | **+15** |
+| Large employer (≥ 50 open jobs in ≥ 2 countries)                                            | **+10** |
+| English posting in a country where English isn't the main language                          | **+5**  |
+| Posting rules out sponsorship, or requires an existing right to work                        | **−60** |
 
 Scores are **likelihoods, not guarantees and not legal advice**. Always confirm with the employer.
 
 ## By the numbers
 
-From the live data on 2026-11-11:
+From the live data on 2026-11-12:
 
-|                                    |                                                                                       |
-| ---------------------------------- | ------------------------------------------------------------------------------------- |
-| Published jobs                     | **5,689** in 21 countries + 181 Europe-wide (DE 1,536 · GB 1,254 · NL 624 · IE 445 …) |
-| Open jobs processed                | **16,343** from **145** job boards (Greenhouse 77 · Ashby 56 · Lever 12)              |
-| Jobs with register evidence        | **NL 581 of 624 · GB 1,083 of 1,254 · IE 320 of 445**                                 |
-| Sponsor registers                  | **13,087** IND sponsors · **121,488** UK sponsors · **9,430** Irish permit holders    |
-| Employers with sponsor evidence    | **87** of 145                                                                         |
-| Company matching (automatic rules) | **100% precision · 81.8% recall** on 100 hand-labelled pairs                          |
-| Duplicate postings folded          | **1,266** into 705 roles                                                              |
-| Full refresh of all boards         | **75 s** (down from 37 min)                                                           |
-| Tests                              | **510**, plus an offline end-to-end smoke test of the whole pipeline                  |
+|                                    |                                                                                                       |
+| ---------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| Published jobs                     | **5,733** in 21 countries + 179 Europe-wide (DE 1,535 · GB 1,256 · NL 625 · IE 450 …)                 |
+| Open jobs processed                | **16,352** from **145** job boards (Greenhouse 77 · Ashby 56 · Lever 12)                              |
+| Jobs with register evidence        | **NL 583 of 625 · GB 1,082 of 1,256 · IE 323 of 450 · DK 12 of 59**                                   |
+| Sponsor registers                  | **13,087** IND · **121,459** UK · **9,430** Irish permit holders · **990** Danish certified companies |
+| Employers with sponsor evidence    | **87** of 145                                                                                         |
+| Company matching (automatic rules) | **100% precision · 81.8% recall** on 100 hand-labelled pairs                                          |
+| Duplicate postings folded          | **1,260** into 711 roles                                                                              |
+| Full refresh of all boards         | **75 s** (down from 37 min)                                                                           |
+| Tests                              | **545**, plus an offline end-to-end smoke test of the whole pipeline                                  |
 
 ## Engineering highlights
 
@@ -132,7 +132,7 @@ From the live data on 2026-11-11:
 - **Hardened by default.** A strict Content-Security-Policy, where the only inline script is allowed by its SHA-256 hash. GitHub Actions are pinned to commit SHAs, with weekly Dependabot updates, dependency review and CodeQL on every pull request.
 - **Runtime-agnostic core and validated boundaries.** The core uses only web-platform APIs and is shared with a Fastify API, and every external response is parsed with Zod. A changed API shape fails loudly for that board, and one bad link drops that job, not the whole board.
 - **A government spreadsheet without a dependency.** The Irish permits list is an XLSX file whose layout changes every year. A ~100-line reader unzips it with the web-standard `DecompressionStream` and fails loudly on a changed layout instead of silently dropping employers.
-- **Decisions on record.** Every architectural choice is written down as a decision record (32 so far), and all work goes through small, CI-gated pull requests.
+- **Decisions on record.** Every architectural choice is written down as a decision record (38 so far), and all work goes through small, CI-gated pull requests.
 
 ## Tech stack
 
@@ -143,12 +143,12 @@ From the live data on 2026-11-11:
 | Data       | SQLite via `node:sqlite`, Zod at every boundary                                            |
 | Web        | React 19 + Vite, plain CSS with design tokens, pre-rendered SEO pages, English and Turkish |
 | API (v1)   | Fastify, Kysely + Postgres, Testcontainers. Built and tested, not deployed yet             |
-| Testing    | Vitest, Testing Library, jsdom: 510 tests, plus an offline end-to-end smoke test           |
+| Testing    | Vitest, Testing Library, jsdom: 545 tests, plus an offline end-to-end smoke test           |
 | Automation | GitHub Actions: CI on every PR, pipeline twice a day and on merge, deploy to GitHub Pages  |
 
 ## Data sources and ethics
 
-- **Public, keyless sources only:** the Greenhouse, Lever and Ashby job board APIs, the IND public register, the Irish DETE permit statistics and the UK register of licensed sponsors. No LinkedIn or Indeed, and no scraping behind logins.
+- **Public, keyless sources only:** the Greenhouse, Lever and Ashby job board APIs, the IND public register, the Irish DETE permit statistics, the UK register of licensed sponsors and Denmark's SIRI list of certified companies. No LinkedIn or Indeed, and no scraping behind logins.
 - **Metadata plus a link out.** Full job descriptions are never stored or republished.
 - **Attribution** on every piece of evidence, as the registers' reuse terms require.
 - **Corrections and removal on request,** through the [correction form](https://github.com/ilker-ekin/hadijob/issues/new/choose).
@@ -157,7 +157,7 @@ From the live data on 2026-11-11:
 
 **Done**
 
-- [x] Explainable scores from three government sponsor registers, the posting and the salary
+- [x] Explainable scores from four government sponsor registers (NL, IE, UK, DK), the posting and the salary
 - [x] 21 countries plus Europe-wide remote roles, searchable together, by country or EU only
 - [x] Every kind of role, not only tech, with a category filter
 - [x] Evidence across borders: a sponsor in one country counts, at half weight, where there's no register
