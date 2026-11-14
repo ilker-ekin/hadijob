@@ -15,7 +15,7 @@ Free, no sign-up, in English and Turkish.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset=".github/assets/home-dark.png">
-  <img src=".github/assets/home.png" alt="HadiJob search: 5,689 jobs in 21 countries, each with a sponsorship score and three plain-language reasons" width="820">
+  <img src=".github/assets/home.png" alt="HadiJob search: 7,002 jobs in 21 countries, each with a sponsorship score and three plain-language reasons" width="820">
 </picture>
 
 **7,002 jobs** · **21 countries + Europe-wide remote** · **224 employers** · **4 government sponsor registers** · **updated twice a day**
