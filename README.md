@@ -6,7 +6,7 @@
 
 ### Stop applying to jobs that won't sponsor your visa.
 
-HadiJob scores **5,600+ open jobs across Europe** for how likely they are to come with visa sponsorship. It uses government sponsor registers and the posting itself, and shows you **the proof behind every point**.<br>
+HadiJob scores **7,000+ open jobs across Europe** for how likely they are to come with visa sponsorship. It uses government sponsor registers and the posting itself, and shows you **the proof behind every point**.<br>
 Free, no sign-up, in English and Turkish.
 
 **[Find sponsoring jobs at hadijob.com →](https://hadijob.com/)**
@@ -18,7 +18,7 @@ Free, no sign-up, in English and Turkish.
   <img src=".github/assets/home.png" alt="HadiJob search: 5,689 jobs in 21 countries, each with a sponsorship score and three plain-language reasons" width="820">
 </picture>
 
-**5,733 jobs** · **21 countries + Europe-wide remote** · **145 employers** · **4 government sponsor registers** · **updated twice a day**
+**7,002 jobs** · **21 countries + Europe-wide remote** · **224 employers** · **4 government sponsor registers** · **updated twice a day**
 
 </div>
 
@@ -58,7 +58,7 @@ HadiJob checks **public evidence** instead and turns it into a score you can rea
 
 ## 🇹🇷 Türkçe
 
-HadiJob, Avrupa'daki 5.600'den fazla açık ilanı vize sponsorluğu olasılığına göre puanlar. Hollanda, İrlanda, Birleşik Krallık ve Danimarka'nın resmî sponsor kayıtlarına ve ilanın kendisine bakar, her puanın kanıtını da gösterir. Ücretsiz, üyelik yok, tamamen Türkçe: **[hadijob.com](https://hadijob.com/)**
+HadiJob, Avrupa'daki 7.000'den fazla açık ilanı vize sponsorluğu olasılığına göre puanlar. Hollanda, İrlanda, Birleşik Krallık ve Danimarka'nın resmî sponsor kayıtlarına ve ilanın kendisine bakar, her puanın kanıtını da gösterir. Ücretsiz, üyelik yok, tamamen Türkçe: **[hadijob.com](https://hadijob.com/)**
 
 ## How it works
 
@@ -80,7 +80,7 @@ flowchart LR
   REG --> R
 ```
 
-1. **Ingest:** 145 company job boards are fetched politely. Each job's facts (country, remote, salary, language, sponsorship phrases) are extracted while the text is in memory. Descriptions are never stored.
+1. **Ingest:** 226 company job boards are fetched politely. Each job's facts (country, remote, salary, language, sponsorship phrases) are extracted while the text is in memory. Descriptions are never stored.
 2. **Resolve:** each employer is matched to the four registers. Exact names link automatically, near-matches go to human review, and every decision is kept in version control.
 3. **Score:** versioned, explainable rules. A score starts at 0, adds each signal's weight and is clamped to 0–100.
 4. **Export:** one JSON file per country for the site, plus about 320 pre-built company and country pages in both languages.
@@ -103,19 +103,19 @@ Scores are **likelihoods, not guarantees and not legal advice**. Always confirm 
 
 ## By the numbers
 
-From the live data on 2026-11-12:
+From the live data on 2026-11-14:
 
 |                                    |                                                                                                       |
 | ---------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| Published jobs                     | **5,733** in 21 countries + 179 Europe-wide (DE 1,535 · GB 1,256 · NL 625 · IE 450 …)                 |
-| Open jobs processed                | **16,352** from **145** job boards (Greenhouse 77 · Ashby 56 · Lever 12)                              |
-| Jobs with register evidence        | **NL 583 of 625 · GB 1,082 of 1,256 · IE 323 of 450 · DK 12 of 59**                                   |
+| Published jobs                     | **7,002** in 21 countries + 195 Europe-wide (DE 1,669 · GB 1,523 · NL 1,053 · IE 470 …)               |
+| Open jobs processed                | **19,617** from **226** job boards (Greenhouse 120 · Ashby 85 · Lever 21)                             |
+| Jobs with register evidence        | **NL 1,012 of 1,053 · GB 1,264 of 1,523 · IE 324 of 470 · DK 10 of 80**                               |
 | Sponsor registers                  | **13,087** IND · **121,459** UK · **9,430** Irish permit holders · **990** Danish certified companies |
-| Employers with sponsor evidence    | **87** of 145                                                                                         |
+| Employers with sponsor evidence    | **166** of 224                                                                                        |
 | Company matching (automatic rules) | **100% precision · 81.8% recall** on 100 hand-labelled pairs                                          |
-| Duplicate postings folded          | **1,260** into 711 roles                                                                              |
+| Duplicate postings folded          | **1,663** into 915 roles                                                                              |
 | Full refresh of all boards         | **75 s** (down from 37 min)                                                                           |
-| Tests                              | **545**, plus an offline end-to-end smoke test of the whole pipeline                                  |
+| Tests                              | **595**, plus an offline end-to-end smoke test of the whole pipeline                                  |
 
 ## Engineering highlights
 
@@ -124,12 +124,12 @@ From the live data on 2026-11-12:
 - **Two pieces of evidence for the UK.** On the UK register's 121,000 names, exact-name matching produced 2 false links out of 17 ("Cursor Ltd" in Lincoln is not Cursor). A UK entry now links only when the name matches _and_ a register town is a city where the company hires: 100% precision on 37 labelled pairs, tested in CI.
 - **Growing the employer list from the registers.** The registers double as a list of companies known to sponsor. A pilot probed 2,417 register names against three job-board APIs, measured the hit rate per register (0.9% for Dutch sponsors, against 0.3% for Irish permit holders), and kept only boards verified by hand.
 - **Checked against reality.** Running each extractor on live postings caught false positives the unit tests didn't, such as "deals of £100k+ ACV" read as a salary, or "Visa sponsorship is not offered" counted as a mention. Every one became a regression test.
-- **Search engines without a server.** The app uses hash routes, which search engines can't index, so the build pre-renders about 320 company and country pages with `react-dom/server`, in English and Turkish with `hreflang`, plus a sitemap.
-- **Privacy by architecture.** CV matching runs entirely in the browser with pdf.js and a skill taxonomy. "New since your last visit" stores just a date in the browser, and only after you turn it on. There are no accounts, cookies or trackers.
+- **Search engines without a server.** The app uses hash routes, which search engines can't index, so the build pre-renders the home page and about 320 company and country pages with `react-dom/server`, in English and Turkish with `hreflang`. The pages link to each other with real addresses, carry breadcrumb structured data, and the sitemap dates each page by its newest job. The site is indexed through Google Search Console.
+- **Privacy by architecture.** CV matching runs entirely in the browser with pdf.js and a skill taxonomy. "New since your last visit" stores just a date in the browser, and only after you turn it on. There are no accounts, cookies or trackers. Visit counts (ready, going live with the API) send one anonymous ping per page view into daily totals: no IPs, cookies or IDs stored, unknown sources kept only as "other", nothing sent with Do Not Track.
 - **Hardened by default.** A strict Content-Security-Policy, where the only inline script is allowed by its SHA-256 hash. GitHub Actions are pinned to commit SHAs, with weekly Dependabot updates, dependency review and CodeQL on every pull request.
 - **Runtime-agnostic core and validated boundaries.** The core uses only web-platform APIs and is shared with a Fastify API, and every external response is parsed with Zod. A changed API shape fails loudly for that board, and one bad link drops that job, not the whole board.
 - **A government spreadsheet without a dependency.** The Irish permits list is an XLSX file whose layout changes every year. A ~100-line reader unzips it with the web-standard `DecompressionStream` and fails loudly on a changed layout instead of silently dropping employers.
-- **Decisions on record.** Every architectural choice is written down as a decision record (38 so far), and all work goes through small, CI-gated pull requests.
+- **Decisions on record.** Every architectural choice is written down as a decision record (44 so far), and all work goes through small, CI-gated pull requests.
 
 ## Tech stack
 
@@ -140,7 +140,7 @@ From the live data on 2026-11-12:
 | Data       | SQLite via `node:sqlite`, Zod at every boundary                                            |
 | Web        | React 19 + Vite, plain CSS with design tokens, pre-rendered SEO pages, English and Turkish |
 | API (v1)   | Fastify, Kysely + Postgres, Testcontainers. Built and tested, not deployed yet             |
-| Testing    | Vitest, Testing Library, jsdom: 545 tests, plus an offline end-to-end smoke test           |
+| Testing    | Vitest, Testing Library, jsdom: 595 tests, plus an offline end-to-end smoke test           |
 | Automation | GitHub Actions: CI on every PR, pipeline twice a day and on merge, deploy to GitHub Pages  |
 
 ## Data sources and ethics
@@ -148,7 +148,8 @@ From the live data on 2026-11-12:
 - **Public, keyless sources only:** the Greenhouse, Lever and Ashby job board APIs, the IND public register, the Irish DETE permit statistics, the UK register of licensed sponsors and Denmark's SIRI list of certified companies. No LinkedIn or Indeed, and no scraping behind logins.
 - **Metadata plus a link out.** Full job descriptions are never stored or republished.
 - **Attribution** on every piece of evidence, as the registers' reuse terms require.
-- **Corrections and removal on request,** through the [correction form](https://github.com/ilker-ekin/hadijob/issues/new/choose).
+- **Corrections and removal on request,** through the [correction form](https://github.com/ilker-ekin/hadijob/issues/new/choose) or by email to contact@hadijob.com.
+- **GDPR first.** A privacy page names who runs the site and how to reach them, the legal bases and visitors' rights; register entries are deleted 30 days after they leave their register.
 
 ## Roadmap
 
@@ -158,17 +159,17 @@ From the live data on 2026-11-12:
 - [x] 21 countries plus Europe-wide remote roles, searchable together, by country or EU only
 - [x] Every kind of role, not only tech, with a category filter
 - [x] Evidence across borders: a sponsor in one country counts, at half weight, where there's no register
-- [x] Company and country pages that search engines can index, in English and Turkish
+- [x] Company and country pages that search engines can index, in English and Turkish, now open to search engines
 - [x] "New since your last visit": opt-in, kept only in your browser
 - [x] CV matching in the browser
 - [x] English and Turkish, light and dark, on its own domain
+- [x] More employers: the whole Dutch sponsor register probed, 81 new employers after a hand check
 
 **Next**
 
-- [ ] More employers: probing the rest of the Dutch sponsor register (about 12,000 names; running now)
-- [ ] Public launch: a security review, then opening the site to search engines
+- [ ] Public launch: a final security review
 - [ ] Deploy the search API on AWS Lambda + Neon (still €0, still no accounts)
-- [ ] A public stats page with privacy-first visitor counts: no cookies, bots filtered
+- [ ] A public stats page with privacy-first visitor counts (built; goes live with the API)
 
 ## License
 
