@@ -6,7 +6,7 @@
 
 ### Stop applying to jobs that won't sponsor your visa.
 
-HadiJob scores **7,000+ open jobs across Europe** for how likely they are to come with visa sponsorship. It uses government sponsor registers and the posting itself, and shows you **the proof behind every point**.<br>
+HadiJob scores **<!-- readme:hero-count:start -->7,000+<!-- readme:hero-count:end --> open jobs across Europe** for how likely they are to come with visa sponsorship. It uses government sponsor registers and the posting itself, and shows you **the proof behind every point**.<br>
 Free, no sign-up, in English and Turkish.
 
 **[Find sponsoring jobs at hadijob.com →](https://hadijob.com/)**
@@ -18,7 +18,7 @@ Free, no sign-up, in English and Turkish.
   <img src=".github/assets/home.png" alt="HadiJob search: 7,002 jobs in 21 countries, each with a sponsorship score and three plain-language reasons" width="820">
 </picture>
 
-**7,002 jobs** · **21 countries + Europe-wide remote** · **224 employers** · **4 government sponsor registers** · **updated twice a day**
+<!-- readme:stat-line:start -->**7,000 jobs** · **21 countries + Europe-wide remote** · **224 employers** · **4 government sponsor registers** · **updated twice a day**<!-- readme:stat-line:end -->
 
 </div>
 
@@ -58,7 +58,7 @@ HadiJob checks **public evidence** instead and turns it into a score you can rea
 
 ## 🇹🇷 Türkçe
 
-HadiJob, Avrupa'daki 7.000'den fazla açık ilanı vize sponsorluğu olasılığına göre puanlar. Hollanda, İrlanda, Birleşik Krallık ve Danimarka'nın resmî sponsor kayıtlarına ve ilanın kendisine bakar, her puanın kanıtını da gösterir. Ücretsiz, üyelik yok, tamamen Türkçe: **[hadijob.com](https://hadijob.com/)**
+HadiJob, Avrupa'daki <!-- readme:hero-count-tr:start -->7.000<!-- readme:hero-count-tr:end -->'den fazla açık ilanı vize sponsorluğu olasılığına göre puanlar. Hollanda, İrlanda, Birleşik Krallık ve Danimarka'nın resmî sponsor kayıtlarına ve ilanın kendisine bakar, her puanın kanıtını da gösterir. Ücretsiz, üyelik yok, tamamen Türkçe: **[hadijob.com](https://hadijob.com/)**
 
 ## How it works
 
@@ -103,19 +103,30 @@ Scores are **likelihoods, not guarantees and not legal advice**. Always confirm 
 
 ## By the numbers
 
-From the live data on 2026-11-14:
+### Live data
 
-|                                    |                                                                                                       |
-| ---------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| Published jobs                     | **7,002** in 21 countries + 195 Europe-wide (DE 1,669 · GB 1,523 · NL 1,053 · IE 470 …)               |
-| Open jobs processed                | **19,617** from **226** job boards (Greenhouse 120 · Ashby 85 · Lever 21)                             |
-| Jobs with register evidence        | **NL 1,012 of 1,053 · GB 1,264 of 1,523 · IE 324 of 470 · DK 10 of 80**                               |
-| Sponsor registers                  | **13,087** IND · **121,459** UK · **9,430** Irish permit holders · **990** Danish certified companies |
-| Employers with sponsor evidence    | **166** of 224                                                                                        |
-| Company matching (automatic rules) | **100% precision · 81.8% recall** on 100 hand-labelled pairs                                          |
-| Duplicate postings folded          | **1,663** into 915 roles                                                                              |
-| Full refresh of all boards         | **75 s** (down from 37 min)                                                                           |
-| Tests                              | **595**, plus an offline end-to-end smoke test of the whole pipeline                                  |
+<!-- readme:live-table:start -->
+
+From the live data on 2026-11-15 (`metrics.json`):
+
+|                                 |                                                                                                       |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| Published jobs                  | **7,000** in 21 countries + 195 Europe-wide (DE 1,668 · GB 1,523 · NL 1,053 · FR 485 …)               |
+| Open jobs processed             | **19,613** from **226** job boards (Greenhouse 120 · Ashby 85 · Lever 21)                             |
+| Jobs with register evidence     | **NL 1,012 of 1,053 · GB 1,263 of 1,523 · IE 325 of 471 · DK 13 of 80**                               |
+| Sponsor registers               | **13,087** IND · **121,459** UK · **9,430** Irish permit holders · **990** Danish certified companies |
+| Employers with sponsor evidence | **166** of 224                                                                                        |
+| Duplicate postings folded       | **1,663** into 915 roles                                                                              |
+
+<!-- readme:live-table:end -->
+
+### Engineering facts
+
+|                                    |                                                                      |
+| ---------------------------------- | -------------------------------------------------------------------- |
+| Company matching (automatic rules) | **100% precision · 81.8% recall** on 100 hand-labelled pairs         |
+| Full refresh of all boards         | **75 s** (down from 37 min)                                          |
+| Tests                              | **604**, plus an offline end-to-end smoke test of the whole pipeline |
 
 ## Engineering highlights
 
@@ -140,7 +151,7 @@ From the live data on 2026-11-14:
 | Data       | SQLite via `node:sqlite`, Zod at every boundary                                            |
 | Web        | React 19 + Vite, plain CSS with design tokens, pre-rendered SEO pages, English and Turkish |
 | API (v1)   | Fastify, Kysely + Postgres, Testcontainers. Built and tested, not deployed yet             |
-| Testing    | Vitest, Testing Library, jsdom: 595 tests, plus an offline end-to-end smoke test           |
+| Testing    | Vitest, Testing Library, jsdom: 604 tests, plus an offline end-to-end smoke test           |
 | Automation | GitHub Actions: CI on every PR, pipeline twice a day and on merge, deploy to GitHub Pages  |
 
 ## Data sources and ethics
