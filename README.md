@@ -6,7 +6,7 @@
 
 ### Stop applying to jobs that won't sponsor your visa.
 
-HadiJob scores **<!-- readme:hero-count:start -->7,000+<!-- readme:hero-count:end --> open jobs across Europe** for how likely they are to come with visa sponsorship. It uses government sponsor registers and the posting itself, and shows you **the proof behind every point**.<br>
+HadiJob scores **<!-- readme:hero-count:start -->about 7,000<!-- readme:hero-count:end --> open jobs across Europe** for how likely they are to come with visa sponsorship. It uses government sponsor registers and the posting itself, and shows you **the proof behind every point**.<br>
 Free, no sign-up, in English and Turkish.
 
 **[Find sponsoring jobs at hadijob.com →](https://hadijob.com/)**
@@ -18,7 +18,7 @@ Free, no sign-up, in English and Turkish.
   <img src=".github/assets/home.png" alt="HadiJob search: 7,002 jobs in 21 countries, each with a sponsorship score and three plain-language reasons" width="820">
 </picture>
 
-<!-- readme:stat-line:start -->**7,000 jobs** · **21 countries + Europe-wide remote** · **224 employers** · **4 government sponsor registers** · **updated twice a day**<!-- readme:stat-line:end -->
+<!-- readme:stat-line:start -->**6,956 jobs** · **21 countries + Europe-wide remote** · **224 employers** · **4 government sponsor registers** · **updated twice a day**<!-- readme:stat-line:end -->
 
 </div>
 
@@ -30,7 +30,7 @@ HadiJob checks **public evidence** instead and turns it into a score you can rea
 
 - 🏛️ **Is the employer a licensed sponsor?** Checked against the Dutch IND register, Ireland's employment-permit statistics, the UK register of licensed sponsors and Denmark's list of Fast-track certified companies.
 - 📝 **What does the posting say?** It picks up "visa sponsorship" and "relocation package", and also "you must already have the right to work".
-- 💶 **Does the salary clear the permit threshold?** Compared with 2026 work-permit minimums in each country's own currency.
+- 💶 **Does the salary clear the permit threshold?** Compared with the 2026 work-permit minimums of 12 countries, in each country's own currency.
 
 <img src=".github/assets/job.png" alt="Job page: a score of 85 broken down into +40 IND sponsor, +30 mentions relocation support, +10 large employer, +5 English posting" width="820">
 
@@ -58,7 +58,7 @@ HadiJob checks **public evidence** instead and turns it into a score you can rea
 
 ## 🇹🇷 Türkçe
 
-HadiJob, Avrupa'daki <!-- readme:hero-count-tr:start -->7.000<!-- readme:hero-count-tr:end -->'den fazla açık ilanı vize sponsorluğu olasılığına göre puanlar. Hollanda, İrlanda, Birleşik Krallık ve Danimarka'nın resmî sponsor kayıtlarına ve ilanın kendisine bakar, her puanın kanıtını da gösterir. Ücretsiz, üyelik yok, tamamen Türkçe: **[hadijob.com](https://hadijob.com/)**
+HadiJob, Avrupa'daki <!-- readme:hero-count-tr:start -->yaklaşık 7.000<!-- readme:hero-count-tr:end --> açık ilanı vize sponsorluğu olasılığına göre puanlar. Hollanda, İrlanda, Birleşik Krallık ve Danimarka'nın resmî sponsor kayıtlarına ve ilanın kendisine bakar, her puanın kanıtını da gösterir. Ücretsiz, üyelik yok, tamamen Türkçe: **[hadijob.com](https://hadijob.com/)**
 
 ## How it works
 
@@ -71,7 +71,7 @@ flowchart LR
   subgraph Pipeline["Pipeline · GitHub Actions, twice a day"]
     I[Ingest<br/>country · salary · phrases]
     R[Resolve<br/>employer ↔ register]
-    S[Score<br/>rules v7 + evidence]
+    S[Score<br/>rules v8 + evidence]
     E[Export<br/>JSON · pages · sitemap]
   end
   DB[(SQLite)]
@@ -107,16 +107,16 @@ Scores are **likelihoods, not guarantees and not legal advice**. Always confirm 
 
 <!-- readme:live-table:start -->
 
-From the live data on 2026-11-15 (`metrics.json`):
+From the live data on 2026-11-19 (`metrics.json`):
 
 |                                 |                                                                                                       |
 | ------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| Published jobs                  | **7,000** in 21 countries + 195 Europe-wide (DE 1,668 · GB 1,523 · NL 1,053 · FR 485 …)               |
-| Open jobs processed             | **19,613** from **226** job boards (Greenhouse 120 · Ashby 85 · Lever 21)                             |
-| Jobs with register evidence     | **NL 1,012 of 1,053 · GB 1,263 of 1,523 · IE 325 of 471 · DK 13 of 80**                               |
-| Sponsor registers               | **13,087** IND · **121,459** UK · **9,430** Irish permit holders · **990** Danish certified companies |
-| Employers with sponsor evidence | **166** of 224                                                                                        |
-| Duplicate postings folded       | **1,663** into 915 roles                                                                              |
+| Published jobs                  | **6,956** in 21 countries + 194 Europe-wide (DE 1,721 · GB 1,516 · NL 1,033 · FR 479 …)               |
+| Open jobs processed             | **19,460** from **226** job boards (Greenhouse 120 · Ashby 85 · Lever 21)                             |
+| Jobs with register evidence     | **NL 994 of 1,033 · GB 1,285 of 1,516 · IE 344 of 467 · DK 15 of 79**                                 |
+| Sponsor registers               | **13,087** IND · **121,468** UK · **9,430** Irish permit holders · **990** Danish certified companies |
+| Employers with sponsor evidence | **167** of 224                                                                                        |
+| Duplicate postings folded       | **1,690** into 930 roles                                                                              |
 
 <!-- readme:live-table:end -->
 
@@ -151,7 +151,7 @@ From the live data on 2026-11-15 (`metrics.json`):
 | Data       | SQLite via `node:sqlite`, Zod at every boundary                                            |
 | Web        | React 19 + Vite, plain CSS with design tokens, pre-rendered SEO pages, English and Turkish |
 | API (v1)   | Fastify, Kysely + Postgres, Testcontainers. Built and tested, not deployed yet             |
-| Testing    | Vitest, Testing Library, jsdom: 604 tests, plus an offline end-to-end smoke test           |
+| Testing    | Vitest, Testing Library, jsdom: 606 tests, plus an offline end-to-end smoke test           |
 | Automation | GitHub Actions: CI on every PR, pipeline twice a day and on merge, deploy to GitHub Pages  |
 
 ## Data sources and ethics
