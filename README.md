@@ -15,7 +15,7 @@ Free, no sign-up, in English and Turkish.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset=".github/assets/home-dark.png">
-  <img src=".github/assets/home.png" alt="HadiJob search: 7,002 jobs in 21 countries, each with a sponsorship score and three plain-language reasons" width="820">
+  <img src=".github/assets/home.png" alt="HadiJob search: 6,970 jobs across Europe in a list with sponsorship scores, and the evidence for the selected job beside it" width="820">
 </picture>
 
 <!-- readme:stat-line:start -->**6,970 jobs** · **21 countries + Europe-wide remote** · **224 employers** · **4 government sponsor registers** · **updated twice a day**<!-- readme:stat-line:end -->
@@ -32,7 +32,7 @@ HadiJob checks **public evidence** instead and turns it into a score you can rea
 - 📝 **What does the posting say?** It picks up "visa sponsorship" and "relocation package", and also "you must already have the right to work".
 - 💶 **Does the salary clear the permit threshold?** Compared with the 2026 work-permit minimums of 12 countries, in each country's own currency.
 
-<img src=".github/assets/job.png" alt="Job page: a score of 85 broken down into +40 IND sponsor, +30 mentions relocation support, +10 large employer, +5 English posting" width="820">
+<img src=".github/assets/job.png" alt="Job page: a score of 85 broken down into +40 IND recognised sponsor, +30 mentions relocation support, +15 large employer and English posting" width="820">
 
 ## What you can do
 
@@ -47,7 +47,7 @@ HadiJob checks **public evidence** instead and turns it into a score you can rea
 - **Every point has a reason.** "IND recognised sponsor +40", "posting mentions a relocation package +30", "salary ≥ Blue Card threshold +15". No black box.
 - **"Does this company sponsor visas?"** Each employer has its own page in the app, with the registers that list it, its open jobs per country with their strongest evidence, and its scored jobs. The companies list filters by country.
 
-<img src=".github/assets/company.png" alt="Company page: Does Mollie sponsor visas? It lists the IND and UK registers and a table of open jobs per country that filters Mollie's job cards" width="820">
+<img src=".github/assets/company.png" alt="Company page: Does Mollie sponsor visas? Its jobs with the strongest evidence, the IND and UK registers, and open jobs per country" width="820">
 
 **Personalise**
 
