@@ -18,7 +18,7 @@ Free, no sign-up, in English and Turkish.
   <img src=".github/assets/home.png" alt="HadiJob search: 7,002 jobs in 21 countries, each with a sponsorship score and three plain-language reasons" width="820">
 </picture>
 
-<!-- readme:stat-line:start -->**6,956 jobs** · **21 countries + Europe-wide remote** · **224 employers** · **4 government sponsor registers** · **updated twice a day**<!-- readme:stat-line:end -->
+<!-- readme:stat-line:start -->**6,970 jobs** · **21 countries + Europe-wide remote** · **224 employers** · **4 government sponsor registers** · **updated twice a day**<!-- readme:stat-line:end -->
 
 </div>
 
@@ -83,11 +83,11 @@ flowchart LR
 1. **Ingest:** 226 company job boards are fetched politely. Each job's facts (country, remote, salary, language, sponsorship phrases) are extracted while the text is in memory. Descriptions are never stored.
 2. **Resolve:** each employer is matched to the four registers. Exact names link automatically, near-matches go to human review, and every decision is kept in version control.
 3. **Score:** versioned, explainable rules. A score starts at 0, adds each signal's weight and is clamped to 0–100.
-4. **Export:** one JSON file per country for the site, plus about 320 pre-built company and country pages in both languages.
+4. **Export:** one JSON file per country for the site, plus about 320 pre-built company and country pages and a page of its own for every job (about 13,900), in both languages.
 
 The whole thing runs for **€0**: no servers and no database server, with the SQLite file kept between runs as a release asset.
 
-### Scoring rules (v7)
+### Scoring rules (v8)
 
 | Signal                                                                                      | Weight  |
 | ------------------------------------------------------------------------------------------- | ------- |
@@ -107,16 +107,16 @@ Scores are **likelihoods, not guarantees and not legal advice**. Always confirm 
 
 <!-- readme:live-table:start -->
 
-From the live data on 2026-11-19 (`metrics.json`):
+From the live data on 2026-11-25 (`metrics.json`):
 
 |                                 |                                                                                                       |
 | ------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| Published jobs                  | **6,956** in 21 countries + 194 Europe-wide (DE 1,721 · GB 1,516 · NL 1,033 · FR 479 …)               |
-| Open jobs processed             | **19,460** from **226** job boards (Greenhouse 120 · Ashby 85 · Lever 21)                             |
-| Jobs with register evidence     | **NL 994 of 1,033 · GB 1,285 of 1,516 · IE 344 of 467 · DK 15 of 79**                                 |
+| Published jobs                  | **6,970** in 21 countries + 194 Europe-wide (DE 1,735 · GB 1,524 · NL 1,034 · IE 484 …)               |
+| Open jobs processed             | **19,405** from **226** job boards (Greenhouse 120 · Ashby 85 · Lever 21)                             |
+| Jobs with register evidence     | **NL 994 of 1,034 · GB 1,284 of 1,524 · IE 362 of 484 · DK 21 of 80**                                 |
 | Sponsor registers               | **13,087** IND · **121,468** UK · **9,430** Irish permit holders · **990** Danish certified companies |
 | Employers with sponsor evidence | **167** of 224                                                                                        |
-| Duplicate postings folded       | **1,690** into 930 roles                                                                              |
+| Duplicate postings folded       | **1,683** into 926 roles                                                                              |
 
 <!-- readme:live-table:end -->
 
@@ -126,7 +126,8 @@ From the live data on 2026-11-19 (`metrics.json`):
 | ---------------------------------- | -------------------------------------------------------------------- |
 | Company matching (automatic rules) | **100% precision · 81.8% recall** on 100 hand-labelled pairs         |
 | Full refresh of all boards         | **75 s** (down from 37 min)                                          |
-| Tests                              | **604**, plus an offline end-to-end smoke test of the whole pipeline |
+| Layout shift on a shared job link  | **CLS 1.0 → 0.0012**, checked by Lighthouse on every pull request    |
+| Tests                              | **790**, plus an offline end-to-end smoke test of the whole pipeline |
 
 ## Engineering highlights
 
@@ -135,24 +136,25 @@ From the live data on 2026-11-19 (`metrics.json`):
 - **Two pieces of evidence for the UK.** On the UK register's 121,000 names, exact-name matching produced 2 false links out of 17 ("Cursor Ltd" in Lincoln is not Cursor). A UK entry now links only when the name matches _and_ a register town is a city where the company hires: 100% precision on 37 labelled pairs, tested in CI.
 - **Growing the employer list from the registers.** The registers double as a list of companies known to sponsor. A pilot probed 2,417 register names against three job-board APIs, measured the hit rate per register (0.9% for Dutch sponsors, against 0.3% for Irish permit holders), and kept only boards verified by hand.
 - **Checked against reality.** Running each extractor on live postings caught false positives the unit tests didn't, such as "deals of £100k+ ACV" read as a salary, or "Visa sponsorship is not offered" counted as a mention. Every one became a regression test.
-- **Search engines without a server.** The app uses hash routes, which search engines can't index, so the build pre-renders the home page and about 320 company and country pages with `react-dom/server`, in English and Turkish with `hreflang`. The pages link to each other with real addresses, carry breadcrumb structured data, and the sitemap dates each page by its newest job. The site is indexed through Google Search Console.
+- **Search engines without a server.** Search engines can't index hash routes, so the build pre-renders the home page, about 320 company and country pages and a page for every job with `react-dom/server`, in English and Turkish with `hreflang`. Every job has a real address (`/jobs/NL/22315/`), old `#` links redirect before the first paint, and a closed job returns a real 404 with a way back to its country. The pages link to each other with real addresses, carry breadcrumb structured data, and the sitemap dates each page by its newest job. The site is indexed through Google Search Console.
+- **Layout shift measured, not guessed.** A Lighthouse check builds the site on every web pull request and fails if CLS is over 0.1. Its first run caught a shared Turkish job link at CLS 1.0: the pre-built home page showed for a moment, then got swapped out. Redirecting before the first paint brought it to 0.0012.
 - **Privacy by architecture.** CV matching runs entirely in the browser with pdf.js and a skill taxonomy. "New since your last visit" stores just a date in the browser, and only after you turn it on. There are no accounts, cookies or trackers. Visit counts (ready, going live with the API) send one anonymous ping per page view into daily totals: no IPs, cookies or IDs stored, unknown sources kept only as "other", nothing sent with Do Not Track.
 - **Hardened by default.** A strict Content-Security-Policy, where the only inline script is allowed by its SHA-256 hash. GitHub Actions are pinned to commit SHAs, with weekly Dependabot updates, dependency review and CodeQL on every pull request.
 - **Runtime-agnostic core and validated boundaries.** The core uses only web-platform APIs and is shared with a Fastify API, and every external response is parsed with Zod. A changed API shape fails loudly for that board, and one bad link drops that job, not the whole board.
 - **A government spreadsheet without a dependency.** The Irish permits list is an XLSX file whose layout changes every year. A ~100-line reader unzips it with the web-standard `DecompressionStream` and fails loudly on a changed layout instead of silently dropping employers.
-- **Decisions on record.** Every architectural choice is written down as a decision record (44 so far), and all work goes through small, CI-gated pull requests.
+- **Decisions on record.** Every architectural choice is written down as a decision record (65 so far), and all work goes through small, CI-gated pull requests.
 
 ## Tech stack
 
-| Area       | Choice                                                                                     |
-| ---------- | ------------------------------------------------------------------------------------------ |
-| Language   | TypeScript (strict) on Node 24, run directly without a build step                          |
-| Monorepo   | pnpm workspaces: core logic, pipeline, web, API                                            |
-| Data       | SQLite via `node:sqlite`, Zod at every boundary                                            |
-| Web        | React 19 + Vite, plain CSS with design tokens, pre-rendered SEO pages, English and Turkish |
-| API (v1)   | Fastify, Kysely + Postgres, Testcontainers. Built and tested, not deployed yet             |
-| Testing    | Vitest, Testing Library, jsdom: 606 tests, plus an offline end-to-end smoke test           |
-| Automation | GitHub Actions: CI on every PR, pipeline twice a day and on merge, deploy to GitHub Pages  |
+| Area       | Choice                                                                                                                     |
+| ---------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Language   | TypeScript (strict) on Node 24, run directly without a build step                                                          |
+| Monorepo   | pnpm workspaces: core logic, pipeline, web, API                                                                            |
+| Data       | SQLite via `node:sqlite`, Zod at every boundary                                                                            |
+| Web        | React 19 + Vite, plain CSS with design tokens, a pre-rendered page for every company, country and job, English and Turkish |
+| API (v1)   | Fastify, Kysely + Postgres, Testcontainers. Built and tested, not deployed yet                                             |
+| Testing    | Vitest, Testing Library, jsdom: 790 tests, plus an offline end-to-end smoke test                                           |
+| Automation | GitHub Actions: CI and Lighthouse on every PR, pipeline twice a day and on merge, deploy to GitHub Pages                   |
 
 ## Data sources and ethics
 
@@ -173,6 +175,8 @@ From the live data on 2026-11-19 (`metrics.json`):
 - [x] Company and country pages that search engines can index, in English and Turkish, now open to search engines
 - [x] "New since your last visit": opt-in, kept only in your browser
 - [x] CV matching in the browser
+- [x] A real address for every job, shareable and indexable, with old links redirected
+- [x] Redesigned search: a filter rail, employers grouped, the job open beside the list
 - [x] English and Turkish, light and dark, on its own domain
 - [x] More employers: the whole Dutch sponsor register probed, 81 new employers after a hand check
 
